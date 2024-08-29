@@ -1,23 +1,51 @@
-import logo from './logo.svg';
 import './App.css';
+import AppHeader from './components/AppHeader';
+import SongItem from './components/SongItem';
+import songs from './data/songs';
+import SongPost from './components/SongPost';
+import { useState } from 'react';
+import AppSearch from './AppSearch';
+import SearchAppBar from './components/AppBar'; // นำเข้า SearchAppBar
 
 function App() {
+  const [selectedSong, setSelectedSong] = useState(null);
+  const [searchText, setSearchText] = useState('');
+
+  function onSongClick(theSong) {
+    setSelectedSong(theSong);
+  }
+
+  function onSongCloseClick() {
+    setSelectedSong(null);
+  }
+
+  const filteredSong = songs.filter((song) => {
+    return song.title.includes(searchText);
+  });
+
+  const songElements = filteredSong.map((song, index) => {
+    return <SongItem key={index} song={song} onSongClick={onSongClick} />;
+  });
+
+  let songPost = null;
+  if (!!selectedSong) {
+    songPost = <SongPost song={selectedSong} onBgClick={onSongCloseClick} />;
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="app">
+      <AppHeader />
+      <SearchAppBar /> {/* เพิ่ม SearchAppBar */}
+      <section className="app-section">
+        <div className="app-container">
+          <AppSearch value={searchText} onValueChange={setSearchText} />
+          <div className="app-grid">
+            {songElements}
+          </div>
+        </div>
+      </section>
+
+      {songPost}
     </div>
   );
 }
